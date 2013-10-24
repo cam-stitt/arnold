@@ -29,8 +29,8 @@ TODO
 
 ##Contribute
 
-- Issue Tracker: github.com/cam-stitt/shift/issues
-- Source Code: github.com/cam-stitt/shift
+- Issue Tracker: https://github.com/cam-stitt/shift/issues
+- Source Code: https://github.com/cam-stitt/shift
 
 ##Support
 
