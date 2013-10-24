@@ -2,13 +2,13 @@ import unittest
 
 from peewee import SqliteDatabase
 
-from shift import _perform_migrations, _perform_single_migration, main
-from shift.exceptions import (
+from arnold import _perform_migrations, _perform_single_migration, main
+from arnold.exceptions import (
     DBAttrNotFound,
     InvalidConfiguration,
     ModuleNotFoundException
 )
-from shift.models import Migration
+from arnold.models import Migration
 
 
 db = SqliteDatabase('test.db')
@@ -104,7 +104,7 @@ class TestMigrationFunctions(unittest.TestCase):
         ))
 
     def test_main_single_migration(self):
-        """Call shift's main method and perform a single migration"""
+        """Call arnold's main method and perform a single migration"""
         self.assertTrue(main(database=db, **kwargs))
 
     def test_main_ignore_migration(self):

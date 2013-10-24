@@ -2,7 +2,7 @@ import os
 
 from termcolor import colored
 
-from shift.exceptions import (
+from arnold.exceptions import (
     ArgumentException,
     DBAttrNotFound,
     DirectionNotFoundException,
@@ -10,7 +10,7 @@ from shift.exceptions import (
     ModuleNotFoundException,
     MigrationNotFoundException,
 )
-from shift.models import Migration
+from arnold.models import Migration
 from importlib import import_module
 
 
