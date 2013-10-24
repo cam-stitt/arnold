@@ -11,7 +11,7 @@ from shift.exceptions import (
     MigrationNotFoundException,
 )
 from shift.models import Migration
-from shift.utils import import_module
+from importlib import import_module
 
 
 IGNORED_FILES = [u"__init__"]
@@ -28,8 +28,12 @@ def _retreive_filenames(files):
     return filenames
 
 
-def _perform_single_migration(settings, direction, migration, model):
+def _perform_single_migration(direction, model, **kwargs):
     """Runs a single migration method (up or down)"""
+    migration = kwargs.get("migration")
+    if not migration:
+        raise MigrationNotFoundException
+
     if model.select().where(
         model.migration == migration
     ).exists() and direction == "up":
@@ -41,9 +45,11 @@ def _perform_single_migration(settings, direction, migration, model):
         colored(migration, u"yellow"), colored(direction, u"magenta")
     ))
     try:
-        migration_module = import_module(u"{0}.{1}".format(
-            getattr(settings, "MIGRATION_MODULE"), migration)
+        module_name = u"{0}.{1}".format(
+            kwargs.get("migration_module"), migration
         )
+        print("Importing {0}".format(module_name))
+        migration_module = import_module(module_name)
     except:
         raise ModuleNotFoundException
 
@@ -66,68 +72,58 @@ def _perform_single_migration(settings, direction, migration, model):
         raise DirectionNotFoundException
 
 
-def _perform_migrations(settings, direction, model, migration=None):
+def _perform_migrations(direction, model, **kwargs):
     """
     Find the migration if it is passed in and call the up or down method as
     required. If no migration is passed, loop through list and find
     the migrations that need to be run.
     """
-    files = os.listdir(getattr(settings, "MIGRATION_DIR"))
+    migration = kwargs.get("migration")
+    files = os.listdir(kwargs.get("directory"))
     filenames = _retreive_filenames(files)
     if migration:
         if migration not in filenames:
             raise MigrationNotFoundException
-        _perform_single_migration(settings, direction, migration, model)
+        _perform_single_migration(direction, model, **kwargs)
         return True
 
     for f in filenames:
-        _perform_single_migration(settings, direction, f, model)
+        _perform_single_migration(direction, model, migration=f, **kwargs)
     return True
 
 
-if __name__ == u"__main__":
-    import argparse
-    parser = argparse.ArgumentParser(
-        description=u"Simple, extendable migrations"
-    )
-    parser.add_argument(
-        u"--direction",
-        required=False,
-        default=u"up",
-        help=u"The direction the migration is going"
-    )
-    parser.add_argument(
-        u"--migration",
-        required=False,
-        help=u"The specific migration to run"
-    )
-    parser.add_argument(
-        u"--settings",
-        required=True,
-        help=u"The location of the settings file"
-    )
+def main(direction="up", **kwargs):
+    """The main method, handle exceptions and start migrations"""
+    # Pop ignored and db, they aren't required later
+    try:
+        ignored = kwargs.pop("ignored")
+    except KeyError:
+        ignored = None
+    try:
+        db = kwargs.pop("database")
+    except KeyError:
+        db = None
+    # Get directory and module, we need them later
+    directory = kwargs.get("directory")
+    migration_module = kwargs.get("migration_module")
 
-    args = parser.parse_args()
-
-    if args.direction not in [u"up", u"down"]:
+    if direction not in [u"up", u"down"]:
         raise ArgumentException
 
-    settings = import_module(args.settings)
+    if ignored:
+        IGNORED_FILES.extend(ignored)
 
-    if hasattr(settings, "IGNORED_FILES"):
-        IGNORED_FILES.extend(getattr(settings, "IGNORED_FILES"))
-
-    if hasattr(settings, "DATABASE"):
+    if db:
         model = Migration
-        model._meta.database = getattr(settings, "DATABASE")
+        model._meta.database = db
     else:
         raise DBAttrNotFound
 
-    if not hasattr(settings, "MIGRATION_DIR") or not hasattr(
-            settings, "MIGRATION_MODULE"
-    ):
+    if not directory or not migration_module:
         raise InvalidConfiguration
 
     _perform_migrations(
-        settings, args.direction, model, migration=args.migration
+        direction, model, **kwargs
     )
+
+    return True
