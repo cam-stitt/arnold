@@ -20,8 +20,8 @@ if __name__ == '__main__':
 
 ##Features
 
-* Easy setup
-* Simple command `$ shift --direction "up" --migration "001_initial"`
+* Migration management for peewee
+* Simple API, get started in seconds
 
 ##Installation
 

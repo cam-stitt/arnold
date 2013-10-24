@@ -34,21 +34,32 @@ def _perform_single_migration(direction, model, **kwargs):
     if not migration:
         raise MigrationNotFoundException
 
-    if model.select().where(
+    migration_exists = model.select().where(
         model.migration == migration
-    ).exists() and direction == "up":
+    ).limit(1).exists()
+
+    if migration_exists and direction == "up":
         print(u"Migration {0} already exists, {1}".format(
             colored(migration, u"yellow"), colored(u"skipping", u"cyan")
         ))
         return False
+    if not migration_exists and direction == "down":
+        print(u"Migration {0} does not exist, {1}".format(
+            colored(migration, u"yellow"), colored(u"skipping", u"cyan")
+        ))
+        return False
+
     print(u"Migration {0} going {1}".format(
         colored(migration, u"yellow"), colored(direction, u"magenta")
     ))
+
     try:
         module_name = u"{0}.{1}".format(
             kwargs.get("migration_module"), migration
         )
-        print("Importing {0}".format(module_name))
+        print("Importing {0}".format(
+            colored(module_name, "blue")
+        ))
         migration_module = import_module(module_name)
     except:
         raise ModuleNotFoundException
@@ -57,16 +68,13 @@ def _perform_single_migration(direction, model, **kwargs):
         getattr(migration_module, direction)()
         if direction == u"up":
             model.insert(migration=migration).execute()
-            print(u"Migration {0} went {1}".format(
-                migration, colored(u"up", u"magenta")
-            ))
         else:
             model.delete().where(
                 model.migration == migration
             ).execute()
-            print(u"Migration {0} went {1}".format(
-                migration, colored(u"down", u"magenta")
-            ))
+        print(u"Migration {0} went {1}".format(
+            colored(migration, "yellow"), colored(direction, u"magenta")
+        ))
         return True
     else:
         raise DirectionNotFoundException
@@ -81,6 +89,9 @@ def _perform_migrations(direction, model, **kwargs):
     migration = kwargs.get("migration")
     files = os.listdir(kwargs.get("directory"))
     filenames = _retreive_filenames(files)
+    if len(filenames) <= 0:
+        return True
+
     if migration:
         if migration not in filenames:
             raise MigrationNotFoundException
@@ -102,7 +113,7 @@ def main(direction="up", **kwargs):
     try:
         db = kwargs.pop("database")
     except KeyError:
-        db = None
+        raise DBAttrNotFound
     # Get directory and module, we need them later
     directory = kwargs.get("directory")
     migration_module = kwargs.get("migration_module")
