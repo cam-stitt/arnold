@@ -42,6 +42,10 @@ main(
 )
 ```
 
+Then, you can just run this from the command line:
+
+`$ bin/arnold`
+
 ###Configuration
 
 Arnold accepts a number of configuration options.
