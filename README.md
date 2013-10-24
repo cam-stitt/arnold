@@ -5,6 +5,19 @@ orm. The list of currently supported ORMs is:
 
 * [peewee](https://github.com/coleifer/peewee)
 
+To use it, just create a file in your project and add the following:
+
+```python
+import shift.main
+
+if __name__ == '__main__':
+    shift.main(
+        database=SqliteDatabase('test.db'),
+        directory="path/to/migrations",
+        migration_module="path.to.migrations"
+    )
+```
+
 ##Features
 
 * Easy setup
