@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name='shift',
@@ -10,7 +10,7 @@ setup(
     author_email='cameron@castitt.com',
     url='https://github.com/cam-stitt/shift',
     license='BSD',
-    packages=find_packages(),
+    packages=['shift'],
     zip_safe=False,
     install_requires=['peewee', 'termcolor'],
     include_package_data=True,
