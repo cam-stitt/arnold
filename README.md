@@ -6,7 +6,7 @@ The list of currently supported ORMs is:
 
 * [peewee](https://github.com/coleifer/peewee)
 
-The full example application can be viewed at cam-stitt/arnold-example.
+The full example application can be viewed at [cam-stitt/arnold-example](https://github.com/cam-stitt/arnold-example).
 
 ##Installation
 
