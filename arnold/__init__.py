@@ -33,7 +33,7 @@ def _retreive_filenames(files):
            splits[0] in IGNORED_FILES:
             continue
         filenames.append(splits[0])
-    return sorted(filenames, key=lambda fname: fname.split("_")[0])
+    return sorted(filenames, key=lambda fname: int(fname.split("_")[0]))
 
 
 def _perform_single_migration(direction, model, **kwargs):
