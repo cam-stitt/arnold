@@ -25,7 +25,13 @@ Migrations require two methods. `up` for creation and `down` for deletion.
 
 Peewee has the ability to easily perform migrations such as adding a column. See [peewee docs](http://peewee.readthedocs.org/en/latest/peewee/playhouse.html#basic-schema-migrations).
 
-You should follow a naming convention such as prefixing the file with numbers and incrementing them for each migration. This ensures that the files are run in the correct order.
+You must follow the naming convention `x_name` where `x` is a number, and `name` is a name for your personal reference. This will ensure that migrations are run in the correct order. Here is an example of some migration files:
+
+```
+001_initial.py
+002_add_admin_to_users.py
+003_add_account_table.py
+```
 
 An example of a migration file can be found [here](https://github.com/cam-stitt/arnold/blob/master/tests/migrations/001_initial.py).
 
