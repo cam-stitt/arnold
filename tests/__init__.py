@@ -2,7 +2,9 @@ import unittest
 
 from peewee import SqliteDatabase
 
-from arnold import _perform_migrations, _perform_single_migration, main
+from arnold import (
+    _perform_migrations, _perform_single_migration, _setup_table, main
+)
 from arnold.exceptions import (
     DBAttrNotFound,
     InvalidConfiguration,
@@ -33,6 +35,15 @@ class TestMigrationFunctions(unittest.TestCase):
 
     def tearDown(self):
         self.model.drop_table()
+
+    def test_setup_table(self):
+        """Ensure that the Migration table will be setup properly"""
+        # Drop the table if it exists, as we are creating it later
+        if self.model.table_exists():
+            self.model.drop_table()
+
+        self.assertTrue(_setup_table(self.model))
+        self.assertTrue(_setup_table(self.model) is None)
 
     def do_good_migration_up(self):
         """A utility to perform a successfull upwards migration"""

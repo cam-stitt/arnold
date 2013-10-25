@@ -46,6 +46,8 @@ Then, you can just run this from the command line:
 
 `$ bin/arnold`
 
+The first time that this is run, the [Migration](https://github.com/cam-stitt/arnold/blob/master/arnold/models.py) table will be added.
+
 ###Configuration
 
 Arnold accepts a number of configuration options.

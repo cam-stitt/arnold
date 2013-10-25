@@ -17,6 +17,14 @@ from importlib import import_module
 IGNORED_FILES = [u"__init__"]
 
 
+def _setup_table(model):
+    if model.table_exists():
+        return
+    else:
+        model.create_table()
+    return True
+
+
 def _retreive_filenames(files):
     filenames = list()
     for f in files:
@@ -129,6 +137,8 @@ def main(direction="up", **kwargs):
         model._meta.database = db
     else:
         raise DBAttrNotFound
+
+    _setup_table(model)
 
     if not directory or not migration_module:
         raise InvalidConfiguration
