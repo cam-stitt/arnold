@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='arnold',
-    version='0.3.0',
+    version='0.3.1',
     description='Simple migrations for python ORMs',
     long_description='',
     keywords='python, peewee, migrations',
