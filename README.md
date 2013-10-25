@@ -29,13 +29,19 @@ An example of a migration file can be found [here](https://github.com/cam-stitt/
 
 ###Running Migrations
 
-There are a number of ways this can be done, however the following is the recommended way. Create a `bin` directory in your project and add a file called `arnold`. In this file add the following:
+To begin running migrations, add a file at the root of your project and give it a name such as `migrator.py`. Copy and paste the following into the file:
 
 ```python
-#!/usr/bin/env python
-
+import argparse
 from arnold import main
+
+parse = argparse.ArgumentParser(description="Perform migrations on the database")
+parser.add_argument("direction", help="The direction of the migrations")
+
+args = parser.parse_args()
+
 main(
+    direction=args.direction
     database=SqliteDatabase('test.db'),
     directory="path/to/migrations",
     migration_module="path.to.migrations"
@@ -44,7 +50,7 @@ main(
 
 Then, you can just run this from the command line:
 
-`$ bin/arnold`
+```$ python migrator.py "up"```
 
 The first time that this is run, the [Migration](https://github.com/cam-stitt/arnold/blob/master/arnold/models.py) table will be added.
 
