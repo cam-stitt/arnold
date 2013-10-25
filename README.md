@@ -6,6 +6,8 @@ The list of currently supported ORMs is:
 
 * [peewee](https://github.com/coleifer/peewee)
 
+The full example application can be viewed at cam-stitt/arnold-example.
+
 ##Installation
 
 Installation is simple using pip:
@@ -79,4 +81,5 @@ The project is licensed under the BSD license.
 
 ##Roadmap
 
-* Support for more SQLAlchemy
+* Support for SQLAlchemy
+* Migration model configuration
