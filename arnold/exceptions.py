@@ -10,6 +10,14 @@ class DirectionNotFoundException(Exception):
     pass
 
 
+class FieldNotFoundException(Exception):
+    pass
+
+
+class FieldsRequiredException(Exception):
+    pass
+
+
 class InvalidConfiguration(Exception):
     pass
 

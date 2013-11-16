@@ -7,10 +7,13 @@ from arnold import (
 )
 from arnold.exceptions import (
     DBAttrNotFound,
+    FieldNotFoundException,
+    FieldsRequiredException,
     InvalidConfiguration,
     ModuleNotFoundException
 )
 from arnold.models import Migration
+from arnold.peewee import create_table
 
 
 db = SqliteDatabase('test.db')
@@ -140,6 +143,27 @@ class TestMigrationFunctions(unittest.TestCase):
         with self.assertRaises(InvalidConfiguration):
             main(database=db, directory=directory)
 
+
+class TestUtilMethods(unittest.TestCase):
+    def setUp(self):
+        self.model = Migration
+        self.model._meta.database = db
+
+    def tearDown(self):
+        if self.model.table_exists():
+            self.model.drop_table()
+
+    def test_create_table(self):
+        create_table(self.model, ["id", "migration"])
+        self.assertTrue(self.model.table_exists())
+
+    def test_create_table_fails_on_unkown_field(self):
+        with self.assertRaises(FieldNotFoundException):
+            create_table(self.model, ["id", "migration", "bad_field"])
+
+    def test_create_table_with_empty_fields_raises_exception(self):
+        with self.assertRaises(FieldsRequiredException):
+            create_table(self.model, [])
 
 if __name__ == '__main__':
     unittest.main()

@@ -97,6 +97,10 @@ def _perform_migrations(direction, model, **kwargs):
     migration = kwargs.get("migration")
     files = os.listdir(kwargs.get("directory"))
     filenames = _retreive_filenames(files)
+
+    if direction == "down":
+        filenames.reverse()
+
     if len(filenames) <= 0:
         return True
 
