@@ -1,10 +1,10 @@
-from peewee import CompositeKey, QueryCompiler
+from peewee import CompositeKey
 
 from arnold.exceptions import FieldNotFoundException, FieldsRequiredException
 
 
 def create_table_sql(model_class, fields, safe=False):
-    compiler = QueryCompiler()
+    compiler = model_class._meta.database.compiler()
     parts = ['CREATE TABLE']
     if safe:
         parts.append('IF NOT EXISTS')
