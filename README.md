@@ -45,6 +45,7 @@ from arnold import main
 
 parse = argparse.ArgumentParser(description="Perform migrations on the database")
 parser.add_argument("direction", help="The direction of the migrations")
+parser.add_argument("--fake", action="store_true", default=False, help="Do you want to fake the migrations (not actually run them, but update the migration table)?")
 
 args = parser.parse_args()
 
@@ -52,7 +53,8 @@ main(
     direction=args.direction
     database=SqliteDatabase('test.db'),
     directory="path/to/migrations",
-    migration_module="path.to.migrations"
+    migration_module="path.to.migrations",
+    fake=args.fake
 )
 ```
 
