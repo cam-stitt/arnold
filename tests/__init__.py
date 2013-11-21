@@ -1,6 +1,6 @@
 import unittest
 
-from peewee import SqliteDatabase
+from peewee import SqliteDatabase, Model
 
 from arnold import (
     _perform_migrations, _perform_single_migration, _setup_table, main
@@ -13,7 +13,7 @@ from arnold.exceptions import (
     ModuleNotFoundException
 )
 from arnold.models import Migration
-from arnold.peewee import create_table
+from arnold.utils import create_table
 
 
 db = SqliteDatabase('test.db')
@@ -27,6 +27,10 @@ kwargs = {
 }
 
 
+class BasicModel(Model):
+    pass
+
+
 class TestMigrationFunctions(unittest.TestCase):
     def setUp(self):
         self.model = Migration
@@ -38,6 +42,7 @@ class TestMigrationFunctions(unittest.TestCase):
 
     def tearDown(self):
         self.model.drop_table()
+        BasicModel.drop_table(fail_silently=True)
 
     def test_setup_table(self):
         """Ensure that the Migration table will be setup properly"""
@@ -53,12 +58,14 @@ class TestMigrationFunctions(unittest.TestCase):
         self.assertTrue(_perform_single_migration(
             "up", self.model, migration=self.good_migration, **kwargs
         ))
+        self.assertTrue("basicmodel" in db.get_tables())
 
     def do_good_migration_down(self):
         """A utility to perform a successfull downwards migration"""
         self.assertTrue(_perform_single_migration(
             "down", self.model, migration=self.good_migration, **kwargs
         ))
+        self.assertFalse("basicmodel" in db.get_tables())
 
     def test_perform_single_migration(self):
         """A simple test of _perform_single_migration"""
@@ -142,6 +149,14 @@ class TestMigrationFunctions(unittest.TestCase):
         # Try without module
         with self.assertRaises(InvalidConfiguration):
             main(database=db, directory=directory)
+
+    def test_with_fake_argument_returns_true_no_table(self):
+        """If we pass fake, return true, but don't create the model table"""
+        kwargs.update({
+            'fake': True
+        })
+        self.assertTrue(main(database=db, **kwargs))
+        self.assertFalse("basicmodel" in db.get_tables())
 
 
 class TestUtilMethods(unittest.TestCase):
