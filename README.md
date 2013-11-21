@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/cam-stitt/arnold.png)](https://travis-ci.org/cam-stitt/arnold)
+
 #arnold - Migrations for python
 
 arnold is a python package to assist in managing migrations for your orm.
