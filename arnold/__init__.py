@@ -38,6 +38,8 @@ def _retreive_filenames(files):
 
 def _perform_single_migration(direction, model, **kwargs):
     """Runs a single migration method (up or down)"""
+    fake = kwargs.get("fake")
+
     migration = kwargs.get("migration")
     if not migration:
         raise MigrationNotFoundException
@@ -61,31 +63,40 @@ def _perform_single_migration(direction, model, **kwargs):
         colored(migration, u"yellow"), colored(direction, u"magenta")
     ))
 
-    try:
-        module_name = u"{0}.{1}".format(
-            kwargs.get("migration_module"), migration
-        )
-        print("Importing {0}".format(
-            colored(module_name, "blue")
-        ))
-        migration_module = import_module(module_name)
-    except:
-        raise ModuleNotFoundException
-
-    if hasattr(migration_module, direction):
-        getattr(migration_module, direction)()
-        if direction == u"up":
-            model.insert(migration=migration).execute()
-        else:
-            model.delete().where(
-                model.migration == migration
-            ).execute()
-        print(u"Migration {0} went {1}".format(
-            colored(migration, "yellow"), colored(direction, u"magenta")
-        ))
-        return True
+    if fake:
+        _update_migration_table(direction, model, migration)
+        print(u"Faking {0}".format(colored(migration, "yellow")))
     else:
-        raise DirectionNotFoundException
+        try:
+            module_name = u"{0}.{1}".format(
+                kwargs.get("migration_module"), migration
+            )
+            print("Importing {0}".format(
+                colored(module_name, "blue")
+            ))
+            migration_module = import_module(module_name)
+        except:
+            raise ModuleNotFoundException
+
+        if hasattr(migration_module, direction):
+            getattr(migration_module, direction)()
+            _update_migration_table(direction, model, migration)
+        else:
+            raise DirectionNotFoundException
+
+    print(u"Migration {0} went {1}".format(
+        colored(migration, "yellow"), colored(direction, u"magenta")
+    ))
+    return True
+
+
+def _update_migration_table(direction, model, migration):
+    if direction == u"up":
+        model.insert(migration=migration).execute()
+    else:
+        model.delete().where(
+            model.migration == migration
+        ).execute()
 
 
 def _perform_migrations(direction, model, **kwargs):
@@ -118,10 +129,7 @@ def _perform_migrations(direction, model, **kwargs):
 def main(direction="up", **kwargs):
     """The main method, handle exceptions and start migrations"""
     # Pop ignored and db, they aren't required later
-    try:
-        ignored = kwargs.pop("ignored")
-    except KeyError:
-        ignored = None
+    ignored = kwargs.pop("ignored", None)
     try:
         db = kwargs.pop("database")
     except KeyError:
