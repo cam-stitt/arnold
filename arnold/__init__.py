@@ -14,7 +14,7 @@ from arnold.models import Migration
 from importlib import import_module
 
 
-IGNORED_FILES = [u"__init__"]
+IGNORED_FILES = ["__init__"]
 
 
 def _setup_table(model):
