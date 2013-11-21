@@ -28,8 +28,8 @@ def _setup_table(model):
 def _retreive_filenames(files):
     filenames = list()
     for f in files:
-        splits = f.rsplit(u".", 1)
-        if len(splits) <= 1 or splits[1] != u"py" or \
+        splits = f.rsplit(".", 1)
+        if len(splits) <= 1 or splits[1] != "py" or \
            splits[0] in IGNORED_FILES:
             continue
         filenames.append(splits[0])
@@ -49,26 +49,26 @@ def _perform_single_migration(direction, model, **kwargs):
     ).limit(1).exists()
 
     if migration_exists and direction == "up":
-        print(u"Migration {0} already exists, {1}".format(
-            colored(migration, u"yellow"), colored(u"skipping", u"cyan")
+        print("Migration {0} already exists, {1}".format(
+            colored(migration, "yellow"), colored("skipping", "cyan")
         ))
         return False
     if not migration_exists and direction == "down":
-        print(u"Migration {0} does not exist, {1}".format(
-            colored(migration, u"yellow"), colored(u"skipping", u"cyan")
+        print("Migration {0} does not exist, {1}".format(
+            colored(migration, "yellow"), colored("skipping", "cyan")
         ))
         return False
 
-    print(u"Migration {0} going {1}".format(
-        colored(migration, u"yellow"), colored(direction, u"magenta")
+    print("Migration {0} going {1}".format(
+        colored(migration, "yellow"), colored(direction, "magenta")
     ))
 
     if fake:
         _update_migration_table(direction, model, migration)
-        print(u"Faking {0}".format(colored(migration, "yellow")))
+        print("Faking {0}".format(colored(migration, "yellow")))
     else:
         try:
-            module_name = u"{0}.{1}".format(
+            module_name = "{0}.{1}".format(
                 kwargs.get("migration_module"), migration
             )
             print("Importing {0}".format(
@@ -84,14 +84,14 @@ def _perform_single_migration(direction, model, **kwargs):
         else:
             raise DirectionNotFoundException
 
-    print(u"Migration {0} went {1}".format(
-        colored(migration, "yellow"), colored(direction, u"magenta")
+    print("Migration {0} went {1}".format(
+        colored(migration, "yellow"), colored(direction, "magenta")
     ))
     return True
 
 
 def _update_migration_table(direction, model, migration):
-    if direction == u"up":
+    if direction == "up":
         model.insert(migration=migration).execute()
     else:
         model.delete().where(
@@ -138,7 +138,7 @@ def main(direction="up", **kwargs):
     directory = kwargs.get("directory")
     migration_module = kwargs.get("migration_module")
 
-    if direction not in [u"up", u"down"]:
+    if direction not in ["up", "down"]:
         raise ArgumentException
 
     if ignored:
