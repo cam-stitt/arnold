@@ -20,6 +20,12 @@ def create_table_sql(model_class, fields, safe=False):
 
 
 def create_table(model_class, field_names=[], safe=False):
+    db = model_class._meta.database
+    pk = model_class._meta.primary_key
+    if db.sequences and pk.sequence:
+        if not db.sequence_exists(pk.sequence):
+            db.create_sequence(pk.sequence)
+
     if len(field_names) <= 0:
         raise FieldsRequiredException
     fields = []
@@ -32,3 +38,5 @@ def create_table(model_class, field_names=[], safe=False):
     model_class._meta.database.execute_sql(
         ' '.join(create_table_sql(model_class, fields, safe))
     )
+
+    model_class._create_indexes()
