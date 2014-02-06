@@ -1,22 +1,33 @@
-from peewee import CompositeKey
+from peewee import (
+    CompositeKey, Clause, SQL, EnclosedClause, ForeignKeyField,
+)
 
 from arnold.exceptions import FieldNotFoundException, FieldsRequiredException
 
 
 def create_table_sql(model_class, fields, safe=False):
     compiler = model_class._meta.database.compiler()
-    parts = ['CREATE TABLE']
-    if safe:
-        parts.append('IF NOT EXISTS')
+    statement = 'CREATE TABLE IF NOT EXISTS' if safe else 'CREATE TABLE'
     meta = model_class._meta
-    parts.append(compiler.quote(meta.db_table))
-    columns = map(compiler.field_sql, fields)
+
+    columns, constraints = [], []
     if isinstance(meta.primary_key, CompositeKey):
-        pk_cols = map(compiler.quote, (
-            meta.fields[f].db_column for f in meta.primary_key.fields))
-        columns.append('PRIMARY KEY (%s)' % ', '.join(pk_cols))
-    parts.append('(%s)' % ', '.join(columns))
-    return parts
+        pk_cols = [meta.fields[f]._as_entity()
+                   for f in meta.primary_key.field_names]
+        constraints.append(Clause(
+            SQL('PRIMARY KEY'), EnclosedClause(*pk_cols)))
+
+    for field in meta.get_fields():
+        columns.append(compiler.field_definition(field))
+        if isinstance(field, ForeignKeyField) and not field.deferred:
+            constraints.append(compiler.foreign_key_constraint(field))
+
+    return compiler.parse_node(
+        Clause(
+            SQL(statement),
+            model_class._as_entity(),
+            EnclosedClause(*(columns + constraints)))
+    )
 
 
 def create_table(model_class, field_names=[], safe=False):
@@ -36,7 +47,7 @@ def create_table(model_class, field_names=[], safe=False):
         fields.append(field)
 
     model_class._meta.database.execute_sql(
-        ' '.join(create_table_sql(model_class, fields, safe))
+        *create_table_sql(model_class, fields, safe)
     )
 
     model_class._create_indexes()
