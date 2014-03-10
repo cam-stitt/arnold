@@ -1,14 +1,10 @@
 [![Build Status](https://travis-ci.org/cam-stitt/arnold.png)](https://travis-ci.org/cam-stitt/arnold)
 
-#arnold - Migrations for python
+#arnold - Migrations for peewee
 
-arnold is a python package to assist in managing migrations for your orm.
+arnold is a python package to assist in managing migrations for the [peewee](https://github.com/coleifer/peewee) orm.
 
-The list of currently supported ORMs is:
-
-* [peewee](https://github.com/coleifer/peewee)
-
-The full example application can be viewed at [cam-stitt/arnold-example](https://github.com/cam-stitt/arnold-example).
+A full example application can be viewed at [cam-stitt/arnold-example](https://github.com/cam-stitt/arnold-example).
 
 ##Installation
 
@@ -78,6 +74,8 @@ Arnold accepts a number of configuration options.
 
 ##Contribute
 
+Ideas or Pull Requests to make this project better are always welcome.
+
 - Issue Tracker: https://github.com/cam-stitt/arnold/issues
 - Source Code: https://github.com/cam-stitt/arnold
 
@@ -91,5 +89,4 @@ The project is licensed under the BSD license.
 
 ##Roadmap
 
-* Support for SQLAlchemy
 * Migration model configuration
