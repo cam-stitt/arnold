@@ -48,7 +48,7 @@ parser.add_argument("--fake", action="store_true", default=False, help="Do you w
 args = parser.parse_args()
 
 main(
-    direction=args.direction
+    direction=args.direction,
     database=SqliteDatabase('test.db'),
     directory="path/to/migrations",
     migration_module="path.to.migrations",

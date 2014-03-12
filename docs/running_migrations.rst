@@ -13,7 +13,7 @@ To begin running migrations, add a file at the root of your project and give it 
   args = parser.parse_args()
 
   main(
-      direction=args.direction
+      direction=args.direction,
       database=SqliteDatabase('test.db'),
       directory="path/to/migrations",
       migration_module="path.to.migrations",
