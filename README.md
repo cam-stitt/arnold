@@ -71,6 +71,7 @@ Arnold accepts a number of configuration options.
 * *database* - the peewee database to connect to
 * *directory* - the directory of the migration files eg. path/to/migrations
 * *migration_module* - the module of the migrations eg. path.to.migrations
+* *print* - should we print details of the migration when run? Defaults to True
 
 ##Contribute
 
@@ -90,3 +91,4 @@ The project is licensed under the BSD license.
 ##Roadmap
 
 * Migration model configuration
+* Command line tool
