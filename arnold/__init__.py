@@ -17,6 +17,11 @@ from importlib import import_module
 IGNORED_FILES = ["__init__"]
 
 
+def _print_output(msg, do_print):
+    if do_print:
+        print(msg)
+
+
 def _setup_table(model):
     if model.table_exists():
         return
@@ -39,6 +44,7 @@ def _retreive_filenames(files):
 def _perform_single_migration(direction, model, **kwargs):
     """Runs a single migration method (up or down)"""
     fake = kwargs.get("fake")
+    print_output = kwargs.get("print", True)
 
     migration = kwargs.get("migration")
     if not migration:
@@ -49,31 +55,33 @@ def _perform_single_migration(direction, model, **kwargs):
     ).limit(1).exists()
 
     if migration_exists and direction == "up":
-        print("Migration {0} already exists, {1}".format(
+        _print_output("Migration {0} already exists, {1}".format(
             colored(migration, "yellow"), colored("skipping", "cyan")
-        ))
+        ), print_output)
         return False
     if not migration_exists and direction == "down":
-        print("Migration {0} does not exist, {1}".format(
+        _print_output("Migration {0} does not exist, {1}".format(
             colored(migration, "yellow"), colored("skipping", "cyan")
-        ))
+        ), print_output)
         return False
 
-    print("Migration {0} going {1}".format(
+    _print_output("Migration {0} going {1}".format(
         colored(migration, "yellow"), colored(direction, "magenta")
-    ))
+    ), print_output)
 
     if fake:
         _update_migration_table(direction, model, migration)
-        print("Faking {0}".format(colored(migration, "yellow")))
+        _print_output(
+            "Faking {0}".format(colored(migration, "yellow")), print_output
+        )
     else:
         try:
             module_name = "{0}.{1}".format(
                 kwargs.get("migration_module"), migration
             )
-            print("Importing {0}".format(
+            _print_output("Importing {0}".format(
                 colored(module_name, "blue")
-            ))
+            ), print_output)
             migration_module = import_module(module_name)
         except:
             raise ModuleNotFoundException
@@ -84,9 +92,9 @@ def _perform_single_migration(direction, model, **kwargs):
         else:
             raise DirectionNotFoundException
 
-    print("Migration {0} went {1}".format(
+    _print_output("Migration {0} went {1}".format(
         colored(migration, "yellow"), colored(direction, "magenta")
-    ))
+    ), print_output)
     return True
 
 
