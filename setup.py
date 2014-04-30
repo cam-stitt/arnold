@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 install_requires = ['peewee', 'termcolor']
 
@@ -9,7 +9,7 @@ except ImportError:
 
 setup(
     name='arnold',
-    version='0.3.6',
+    version='0.3.7',
     description='Simple migrations for python ORMs',
     long_description='',
     keywords='python, peewee, migrations',
@@ -17,7 +17,7 @@ setup(
     author_email='cameron@castitt.com',
     url='https://github.com/cam-stitt/arnold',
     license='BSD',
-    packages=['arnold'],
+    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     zip_safe=False,
     install_requires=install_requires,
     include_package_data=True,
