@@ -75,16 +75,13 @@ def _perform_single_migration(direction, model, **kwargs):
             "Faking {0}".format(colored(migration, "yellow")), print_output
         )
     else:
-        try:
-            module_name = "{0}.{1}".format(
-                kwargs.get("migration_module"), migration
-            )
-            _print_output("Importing {0}".format(
-                colored(module_name, "blue")
-            ), print_output)
-            migration_module = import_module(module_name)
-        except:
-            raise ModuleNotFoundException
+        module_name = "{0}.{1}".format(
+            kwargs.get("migration_module"), migration
+        )
+        _print_output("Importing {0}".format(
+            colored(module_name, "blue")
+        ), print_output)
+        migration_module = import_module(module_name)
 
         if hasattr(migration_module, direction):
             getattr(migration_module, direction)()

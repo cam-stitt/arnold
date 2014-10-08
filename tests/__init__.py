@@ -81,7 +81,7 @@ class TestMigrationFunctions(unittest.TestCase):
 
     def test_perform_single_migration_not_found(self):
         """Ensure that a bad migration argument raises an error"""
-        with self.assertRaises(ModuleNotFoundException):
+        with self.assertRaises(ImportError):
             _perform_single_migration(
                 "up", self.model, migration=self.bad_migration, **kwargs
             )

@@ -9,7 +9,7 @@ except ImportError:
 
 setup(
     name='arnold',
-    version='0.3.7',
+    version='0.3.8',
     description='Simple migrations for python ORMs',
     long_description='',
     keywords='python, peewee, migrations',
