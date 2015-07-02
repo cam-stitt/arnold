@@ -9,7 +9,7 @@ except ImportError:
 
 setup(
     name='arnold',
-    version='0.3.8',
+    version='0.4.0',
     description='Simple migrations for python ORMs',
     long_description='',
     keywords='python, peewee, migrations',
@@ -24,5 +24,10 @@ setup(
     classifiers=[
         "Programming Language :: Python",
         "Topic :: Software Development :: Libraries :: Python Modules",
-    ]
+    ],
+    entry_points={
+        'console_scripts': [
+            'arnold = arnold:main',
+        ]
+    }
 )

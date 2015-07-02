@@ -1,6 +1,6 @@
 from peewee import SqliteDatabase, Model, PrimaryKeyField
 
-db = SqliteDatabase('test.db')
+from .. import database as db
 
 
 class BasicModel(Model):

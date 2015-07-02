@@ -1,11 +1,13 @@
 Configuration
 -------------
 
-Arnold accepts a number of configuration options.
+Arnold accepts a number of configuration options to the commands.
 
-* *direction* - "up" or "down" - direction to migrate
-* *ignored* - list of filenames to ignore (not including extension)
-* *database* - the peewee database to connect to
-* *directory* - the directory of the migration files eg. path/to/migrations
-* *migration_module* - the module of the migrations eg. path.to.migrations
-* *print* - should we print details of the migration when run? Defaults to True
+* --folder - The folder to use for configration/migrations.
+* --fake   - Add the row to the database without running the migration.
+
+The `__init__.py` file inside the configuration folder holds the database value. This should be peewee database value. Here is an example `__init__.py` file: ::
+
+  from peewee import SqliteDatabase
+
+  database = SqliteDatabase('test.db')
