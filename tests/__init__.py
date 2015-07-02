@@ -1,10 +1,11 @@
 import os
+import shutil
 import sys
 import unittest
 
 from peewee import SqliteDatabase, Model
 
-from arnold import Terminator, parse_args
+from arnold import init, Terminator, parse_args
 from arnold.models import Migration
 
 #sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -30,6 +31,8 @@ class TestMigrationFunctions(unittest.TestCase):
     def tearDown(self):
         self.model.drop_table()
         BasicModel.drop_table(fail_silently=True)
+        if os.path.exists('./test_config'):
+            shutil.rmtree('./test_config')
 
     def test_setup_table(self):
         """Ensure that the Migration table will be setup properly"""
@@ -114,6 +117,14 @@ class TestMigrationFunctions(unittest.TestCase):
         termi = Terminator(args)
         filenames = termi._retreive_filenames()
         self.assertTrue(self.good_migration in filenames)
+
+    def test_init_creates_folders(self):
+        args = parse_args(['init', '--folder', 'test_config'])
+        self.assertTrue(init(args))
+        self.assertTrue(os.path.exists('./test_config'))
+        self.assertTrue(os.path.exists('./test_config/migrations'))
+        self.assertTrue(os.path.isfile('./test_config/__init__.py'))
+        self.assertTrue(os.path.isfile('./test_config/migrations/__init__.py'))
 
 if __name__ == '__main__':
     unittest.main()

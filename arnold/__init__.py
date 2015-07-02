@@ -184,15 +184,31 @@ def status(args):
     else:
         print("No migrations currently run.")
 
+        
+def init(args):
+    os.makedirs('{0}/migrations'.format(args.folder))
+    open('{0}/__init__.py'.format(args.folder), 'a').close()
+    open('{0}/migrations/__init__.py'.format(args.folder), 'a').close()
+    return True
+         
 
 def parse_args(args):
     sys.path.insert(0, os.getcwd())
     parser = argparse.ArgumentParser(description='Migrations. Down. Up.')
-    parser.add_argument(
-        '--folder', dest='folder', default='arnold_config',
-        help='The folder that contains arnold files.'
-    )
     subparsers = parser.add_subparsers(help='sub-command help')
+
+    init_cmd = subparsers.add_parser('init', help='Create the config folder.')
+    init_cmd.set_defaults(func=init)
+
+    if args[0] == 'init':
+        init_cmd.add_argument(
+            '--folder', default='arnold_config', help='The folder to create.'
+        )
+    else:
+        parser.add_argument(
+            '--folder', dest='folder', default='arnold_config',
+            help='The folder that contains arnold files.'
+        )    
 
     status_cmd = subparsers.add_parser(
         'status', help='Current migration status.'
