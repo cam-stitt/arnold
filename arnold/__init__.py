@@ -38,7 +38,8 @@ class Terminator:
             self.model.create_table()
         return True
 
-    def _retreive_filenames(self, files):
+    def _retreive_filenames(self):
+        files = os.listdir('{0}/{1}'.format(self.folder, 'migrations'))
         filenames = list()
         for f in files:
             splits = f.rsplit(".", 1)
@@ -115,8 +116,7 @@ class Terminator:
         """
         self.direction = direction
 
-        files = os.listdir('{0}/{1}'.format(self.folder, 'migrations'))
-        filenames = self._retreive_filenames(files)
+        filenames = self._retreive_filenames()
 
         if self.direction == "down":
             filenames.reverse()

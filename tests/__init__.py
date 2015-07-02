@@ -109,5 +109,11 @@ class TestMigrationFunctions(unittest.TestCase):
         self.assertTrue(termi.perform_migrations('up'))
         self.assertFalse("basicmodel" in db.get_tables())
 
+    def test_filenames_include_good_migration(self):
+        args = parse_args(['up', '1'])
+        termi = Terminator(args)
+        filenames = termi._retreive_filenames()
+        self.assertTrue(self.good_migration in filenames)
+
 if __name__ == '__main__':
     unittest.main()
