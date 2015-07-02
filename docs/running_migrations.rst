@@ -1,31 +1,23 @@
 Running Migrations
 ------------------
 
-To begin running migrations, add a file at the root of your project and give it a name such as `migrator.py`. Copy and paste the following into the file: ::
+Migrations are run in a stepwise manner. There are two commands available to run migrations in a particular direction. Both of these commands require a number to tell arnold how many migrations you would like to run. ::
 
-  import argparse
-  from arnold import main
+  arnold up 1
 
-  parser = argparse.ArgumentParser(description="Perform migrations on the database")
-  parser.add_argument("direction", help="The direction of the migrations")
-  parser.add_argument("--fake", action="store_true", default=False, help="Do you want to fake the migrations (not actually run them, but update the migration table)?")
+The above command will run 1 migration upwards, if available. ::
+  
+  arnold down 3
 
-  args = parser.parse_args()
+The above command will run 3 migrations downwards.
 
-  main(
-      direction=args.direction,
-      database=SqliteDatabase('test.db'),
-      directory="path/to/migrations",
-      migration_module="path.to.migrations",
-      fake=args.fake
-  )
+If you pass in a count of `0`, arnold will run all migrations that have not yet been run. ::
 
-Then, you can just run this from the command line: ::
-
-  $ python migrator.py "up"
-
-If you don't like typing python, make the file executable by running the following. ::
-
-  chmod +x migrator.py
+  arnold up 0
 
 The first time that this is run, the `Migration <https://github.com/cam-stitt/arnold/blob/master/arnold/models.py>`_ table will be added.
+
+Status
+^^^^^^
+
+You can also request the status of the database by running `arnold status`. It will print the latest migration name and the date that it was completed.

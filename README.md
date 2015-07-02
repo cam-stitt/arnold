@@ -14,6 +14,25 @@ Installation is simple using pip:
 
 ##Usage
 
+###The arnold_config folder
+To generate the arnold config folder, run the following command:
+
+```
+arnold init
+```
+
+This will create a directory and fill it with the default content. The directory will look like this:
+
+```
+.
++-- arnold_config
+|   +-- __init__.py
+|   +-- migrations
+|       +-- __init__.py
+```
+
+You can provide an option for a custom folder name by using the `--folder` option. Note that if you provide a custom folder, you will have to pass the `--folder` option to all future arnold commands.
+
 ###Creating Migrations
 
 Migrations are easy to setup. Simply create a `migration` folder
@@ -35,43 +54,46 @@ An example of a migration file can be found [here](https://github.com/cam-stitt/
 
 ###Running Migrations
 
-To begin running migrations, add a file at the root of your project and give it a name such as `migrator.py`. Copy and paste the following into the file:
+Migrations are run in a stepwise manner. There are two commands available to run migrations in a particular direction. Both of these commands require a number to tell arnold how many migrations you would like to run.
 
-```python
-import argparse
-from arnold import main
-
-parser = argparse.ArgumentParser(description="Perform migrations on the database")
-parser.add_argument("direction", help="The direction of the migrations")
-parser.add_argument("--fake", action="store_true", default=False, help="Do you want to fake the migrations (not actually run them, but update the migration table)?")
-
-args = parser.parse_args()
-
-main(
-    direction=args.direction,
-    database=SqliteDatabase('test.db'),
-    directory="path/to/migrations",
-    migration_module="path.to.migrations",
-    fake=args.fake
-)
+```
+arnold up 1
 ```
 
-Then, you can just run this from the command line:
+The above command will run 1 migration upwards, if available.
 
-```$ python migrator.py "up"```
+```
+arnold down 3
+```
+
+The above command will run 3 migrations downwards.
+
+If you pass in a count of `0`, arnold will run all migrations that have not yet been run.
+
+```
+arnold up 0
+```
 
 The first time that this is run, the [Migration](https://github.com/cam-stitt/arnold/blob/master/arnold/models.py) table will be added.
 
+###Status
+
+You can also request the status of the database by running `arnold status`. It will print the latest migration name and the date that it was completed.
+
 ###Configuration
 
-Arnold accepts a number of configuration options.
+Arnold accepts a number of configuration options to the commands.
 
-* *direction* - "up" or "down" - direction to migrate
-* *ignored* - list of filenames to ignore (not including extension)
-* *database* - the peewee database to connect to
-* *directory* - the directory of the migration files eg. path/to/migrations
-* *migration_module* - the module of the migrations eg. path.to.migrations
-* *print* - should we print details of the migration when run? Defaults to True
+* --folder - The folder to use for configration/migrations.
+* --fake   - Add the row to the database without running the migration.
+
+The `__init__.py` file inside the configuration folder holds the database value. This should be peewee database value. Here is an example `__init__.py` file:
+
+```python
+from peewee import SqliteDatabase
+
+database = SqliteDatabase('test.db')
+```
 
 ##Contribute
 
@@ -90,5 +112,4 @@ The project is licensed under the BSD license.
 
 ##Roadmap
 
-* Migration model configuration
-* Command line tool
+At this point, I don't have any items on the roadmap. If you have any ideas, please create an issue.

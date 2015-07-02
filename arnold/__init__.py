@@ -148,7 +148,11 @@ class Terminator:
             )
             return False
 
-        end = start + self.count
+        if self.count == 0:
+            end = len(filenames) - start
+        else:
+            end = start + self.count
+
         migrations_to_complete = filenames[start:end]
 
         if self.count > len(migrations_to_complete):
