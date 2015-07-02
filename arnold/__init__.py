@@ -217,5 +217,6 @@ def parse_args(args):
     return parser.parse_args(args)
 
 def main():
+    sys.argv.pop(0)
     args = parse_args(sys.argv)
     args.func(args)
