@@ -10,20 +10,25 @@ from arnold.models import Migration
 from importlib import import_module
 
 
-class Terminator:
+__all__ = ['Terminator', 'up', 'down', 'status', 'init', 'parse_args', 'main']
+
+
+class Terminator(object):
     IGNORED_FILES = ["__init__"]
 
-    def __init__(self, args):
-        self.fake = getattr(args, 'fake', False)
-        self.count = getattr(args, 'count', 0)
-        self.folder = getattr(args, 'folder', None)
+    def __init__(self, argv):
+        self.fake = getattr(argv, 'fake', False)
+        self.count = getattr(argv, 'count', 0)
 
-        self.prepare_config()
+        self.prepare_config(argv)
         self.database = self.config.database
+        self.migration_module = self.config.migration_module
+        self.directory = self.config.directory
         self.prepare_model()
 
-    def prepare_config(self):
-        self.config = import_module(self.folder)
+    def prepare_config(self, argv):
+        config_file = getattr(argv, 'config', 'migrator.py')
+        self.config = import_module(config_file)
 
     def prepare_model(self):
         self.model = Migration
@@ -39,7 +44,7 @@ class Terminator:
         return True
 
     def _retreive_filenames(self):
-        files = os.listdir('{0}/{1}'.format(self.folder, 'migrations'))
+        files = os.listdir('{0}'.format(self.directory))
         filenames = list()
         for f in files:
             splits = f.rsplit(".", 1)
@@ -76,8 +81,8 @@ class Terminator:
                 "Faking {0}".format(colored(migration, "yellow"))
             )
         else:
-            module_name = "{0}.{1}.{2}".format(
-                self.folder, 'migrations', migration
+            module_name = "{0}.{1}".format(
+                self.migration_module.__name__, migration
             )
             print("Importing {0}".format(
                 colored(module_name, "blue")
@@ -170,16 +175,16 @@ class Terminator:
         return True
 
 
-def up(args):
-    Terminator(args).perform_migrations('up')
+def up(argv):
+    Terminator(argv).perform_migrations('up')
 
 
-def down(args):
-    Terminator(args).perform_migrations('down')
+def down(argv):
+    Terminator(argv).perform_migrations('down')
 
 
-def status(args):
-    latest_migration = Terminator(args).get_latest_migration()
+def status(argv):
+    latest_migration = Terminator(argv).get_latest_migration()
     if latest_migration:
         print("Migration {0} run at {1}.".format(
             colored(latest_migration.migration, "blue"),
@@ -189,30 +194,23 @@ def status(args):
         print("No migrations currently run.")
 
         
-def init(args):
-    os.makedirs('{0}/migrations'.format(args.folder))
-    open('{0}/__init__.py'.format(args.folder), 'a').close()
-    open('{0}/migrations/__init__.py'.format(args.folder), 'a').close()
+def init(argv):
+    open('{0}.py'.format(argv.config), 'a').close()
     return True
          
 
-def parse_args(args):
+def parse_args(argv):
     sys.path.insert(0, os.getcwd())
     parser = argparse.ArgumentParser(description='Migrations. Down. Up.')
+    parser.add_argument(
+        '--config', dest='config', default='migrator',
+        help='The file to create.'
+    )
+    
     subparsers = parser.add_subparsers(help='sub-command help')
 
-    init_cmd = subparsers.add_parser('init', help='Create the config folder.')
+    init_cmd = subparsers.add_parser('init', help='Create the config file.')
     init_cmd.set_defaults(func=init)
-
-    if args[0] == 'init':
-        init_cmd.add_argument(
-            '--folder', default='arnold_config', help='The folder to create.'
-        )
-    else:
-        parser.add_argument(
-            '--folder', dest='folder', default='arnold_config',
-            help='The folder that contains arnold files.'
-        )    
 
     status_cmd = subparsers.add_parser(
         'status', help='Current migration status.'
@@ -225,7 +223,8 @@ def parse_args(args):
         'count', type=int, help='How many migrations to go up.'
     )
     up_cmd.add_argument(
-        '--fake', type=bool, default=False, help='Fake the migration.'
+        '--fake', dest='fake', type=bool, default=False,
+        help='Fake the migration.'
     )
 
     down_cmd = subparsers.add_parser('down', help='Migrate down.')
@@ -234,9 +233,9 @@ def parse_args(args):
         'count', type=int, help='How many migrations to go down.'
     )
 
-    return parser.parse_args(args)
+    return parser.parse_args(argv)
 
 def main():
     sys.argv.pop(0)
-    args = parse_args(sys.argv)
-    args.func(args)
+    argv = parse_args(sys.argv)
+    argv.func(argv)
