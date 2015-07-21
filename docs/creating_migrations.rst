@@ -22,4 +22,4 @@ The basic template for a migration is as follows: ::
     def down:
       pass
 
-A more complete example of a migration file can be found `here <https://github.com/cam-stitt/arnold/blob/master/tests/migrations/001_initial.py>`_.
+A more complete example of a migration file can be found `here <https://github.com/cam-stitt/arnold/blob/master/tests/arnold_config/migrations/001_initial.py>`_.
