@@ -149,7 +149,7 @@ class Terminator:
             return False
 
         if self.count == 0:
-            end = len(filenames) - start
+            end = len(filenames)
         else:
             end = start + self.count
 
@@ -188,13 +188,13 @@ def status(args):
     else:
         print("No migrations currently run.")
 
-        
+
 def init(args):
     os.makedirs('{0}/migrations'.format(args.folder))
     open('{0}/__init__.py'.format(args.folder), 'a').close()
     open('{0}/migrations/__init__.py'.format(args.folder), 'a').close()
     return True
-         
+
 
 def parse_args(args):
     sys.path.insert(0, os.getcwd())
@@ -212,7 +212,7 @@ def parse_args(args):
         parser.add_argument(
             '--folder', dest='folder', default='arnold_config',
             help='The folder that contains arnold files.'
-        )    
+        )
 
     status_cmd = subparsers.add_parser(
         'status', help='Current migration status.'
