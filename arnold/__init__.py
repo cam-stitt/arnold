@@ -14,11 +14,11 @@ class Terminator:
     IGNORED_FILES = ["__init__"]
 
     def __init__(self, args):
-        self.fake = getattr(args, 'fake', False)
-        self.count = getattr(args, 'count', 0)
-        self.folder = getattr(args, 'folder', None)
+        self.fake = args.get('fake', False)
+        self.count = args.get('count', 0)
+        self.folder = args.get('folder', None)
 
-        self.database = getattr(args, 'database', None)
+        self.database = args.get('database', None)
 
         if self.database is None:
             self.prepare_config()
@@ -194,9 +194,10 @@ def status(args):
 
 
 def init(args):
-    os.makedirs('{0}/migrations'.format(args.folder))
-    open('{0}/__init__.py'.format(args.folder), 'a').close()
-    open('{0}/migrations/__init__.py'.format(args.folder), 'a').close()
+    folder = args.get('folder')
+    os.makedirs('{0}/migrations'.format(folder))
+    open('{0}/__init__.py'.format(folder), 'a').close()
+    open('{0}/migrations/__init__.py'.format(folder), 'a').close()
     return True
 
 
@@ -238,7 +239,7 @@ def parse_args(args):
         'count', type=int, help='How many migrations to go down.'
     )
 
-    return parser.parse_args(args)
+    return vars(parser.parse_args(args))
 
 def main():
     sys.argv.pop(0)

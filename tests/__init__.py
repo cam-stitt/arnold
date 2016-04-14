@@ -126,5 +126,15 @@ class TestMigrationFunctions(unittest.TestCase):
         self.assertTrue(os.path.isfile('./test_config/__init__.py'))
         self.assertTrue(os.path.isfile('./test_config/migrations/__init__.py'))
 
+    def test_database_arg_runs_up(self):
+        args = {
+            'database': db,
+            'count': 1,
+            'folder': 'arnold_config',
+        }
+        termi = Terminator(args)
+        termi.perform_migrations('up')
+        self.assertTrue("basicmodel" in db.get_tables())
+
 if __name__ == '__main__':
     unittest.main()
