@@ -18,8 +18,12 @@ class Terminator:
         self.count = getattr(args, 'count', 0)
         self.folder = getattr(args, 'folder', None)
 
-        self.prepare_config()
-        self.database = self.config.database
+        self.database = getattr(args, 'database', None)
+
+        if self.database is None:
+            self.prepare_config()
+            self.database = self.config.database
+
         self.prepare_model()
 
     def prepare_config(self):
