@@ -9,6 +9,8 @@
 dist
 build
 eggs
+.eggs
+include
 parts
 bin
 var
