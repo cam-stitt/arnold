@@ -1,3 +1,7 @@
+# WARNING! Deprecated
+
+I do not have the capacity to maintain this project. Please feel free to fork the repo and apply your updates there, however I will not be updating this repo any further.
+
 [![Build Status](https://travis-ci.org/cam-stitt/arnold.png)](https://travis-ci.org/cam-stitt/arnold)
 
 #arnold - Migrations for peewee
